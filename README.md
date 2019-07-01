@@ -799,4 +799,28 @@ Use modern PHP syntax where possible, but don't forget about readability.
 
 Avoid using View Composers and similar tools unless you really know what you're doing. In most cases, there is a better way to solve the problem.
 
+Keep your database fields in a standard order:
+
+id's (primary key, author id etc), order/position fields, name fields, other sting and text fields, booleans, timestamps
+
+```
+Schema::create('apps', function (Blueprint $table) {
+    $table->uuid('id');
+    $table->primary('id');
+    $table->uuid('author_id')->nullable();
+    $table->foreign('author_id')->references('id')->on('users');
+    $table->string('name')->default('Un-Named App');
+    $table->string('slug');
+    $table->text('description');
+    $table->boolean('revoked');
+    $table->timestampTz('active_at')->nullable();
+    $table->timestampTz('approved_at')->nullable();
+    $table->timestampTz('archived_at')->nullable();
+    $table->timestampTz('locked_at')->nullable();
+    $table->timestampTz('published_at')->nullable();
+    $table->timestampTz('suspended_at')->nullable();
+    $table->timestamps();
+});
+  ```
+
 [🔝 Back to contents](#contents)
