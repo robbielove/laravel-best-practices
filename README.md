@@ -272,7 +272,7 @@ class PostRequest extends Request
 
 ### **Business logic should be in service class**
 
-A controller must have only one responsibility, so move business logic from controllers to service classes.
+A controller must have only one responsibility, so move business logic from controllers to action classes.
 
 Bad:
 
@@ -290,20 +290,29 @@ public function store(Request $request)
 Good:
 
 ```php
-public function store(Request $request)
-{
-    $this->articleService->handleUploadedImage($request->file('image'));
+/app/Http/Controllers/Web/ArticleController.php
+namespace App\Http\Controllers\Web;
 
-    ...
+use App\Actions\CreateArticle;
+
+public function store(Article $article, Request $request, CreateArticle $action)
+{
+    $object = $action->execute(Article $article, $request);
+    
+    return redirect()->route($article->slug);
 }
 
-class ArticleService
+/app/Actions/CreateArticle.php
+namespace App\Actions;
+
+class CreateArticle
 {
-    public function handleUploadedImage($image): void
+    public function execute(Article $article, $request): void
     {
-        if (!is_null($image)) {
-            $image->move(public_path('images') . 'temp');
-        }
+        $article = new Article($request->all());
+        $article->save();
+        
+        return $article;
     }
 }
 ```
